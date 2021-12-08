@@ -1,0 +1,48 @@
+name: winget-fetch
+on:
+  push:
+    branches:
+      - dev
+  schedule:
+    - cron: '33 1 * * *'
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Install Poetry
+        uses: dschep/install-poetry-action@v1.2
+      - name: Cache Poetry virtualenv
+        uses: actions/cache@v1
+        id: cache
+        with:
+          path: ~/.virtualenvs
+          key: poetry-$
+          restore-keys: |
+            poetry-$
+      - name: Set Poetry config
+        run: |
+          poetry config settings.virtualenvs.in-project false
+          poetry config settings.virtualenvs.path ~/.virtualenvs
+      - name: Install Dependencies
+        run: poetry install
+        if: steps.cache.outputs.cache-hit != 'true'
+      - uses: actions/checkout@v2
+        with:
+          repository: 'microsoft/winget-pkgs'
+          path: winget-pkgs
+      - name: Call Package Extract
+        run: |
+          poetry run python ./extract_winget_json.py
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./out
+          publish_branch: latest-pkgs
+
+
