@@ -7,11 +7,12 @@ all_packages = Path('./winget-pkgs/manifests').rglob('*.en-US.yaml')
 
 package_map = dict()
 
+OUTPUT_FILE = "out/packages.json"
+
 
 for filepath in all_packages:
     with open(filepath, 'r') as file:
         pkg = yaml.safe_load(file)
-    print(pkg)
     pkg_id = pkg['PackageIdentifier']
     if pkg_id in package_map:
         old_pkg = package_map[pkg_id]
@@ -22,5 +23,17 @@ for filepath in all_packages:
     else:
         package_map[pkg_id] = pkg
 
-with open("packages.json", 'w') as outfile:
+latest_packages = list(package_map.values())
+
+
+def sanitize_packages(pkgs):
+    for pkg in pkgs:
+        pkg['PackageVersion'] = str(pkg['PackageVersion'])
+        if 'Tags' in pkg:
+            pkg['Tags'] = [str(tag) for tag in pkg['Tags']]
+
+
+sanitize_packages(latest_packages)
+
+with open(OUTPUT_FILE, 'w') as outfile:
     json.dump(list(package_map.values()), outfile)
