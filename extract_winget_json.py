@@ -23,5 +23,17 @@ for filepath in all_packages:
     else:
         package_map[pkg_id] = pkg
 
+latest_packages = list(package_map.values())
+
+
+def sanitize_packages(pkgs):
+    for pkg in pkgs:
+        pkg['PackageVersion'] = str(pkg['PackageVersion'])
+        if 'Tags' in pkg:
+            pkg['Tags'] = [str(tag) for tag in pkg['Tags']]
+
+
+sanitize_packages(latest_packages)
+
 with open(OUTPUT_FILE, 'w') as outfile:
     json.dump(list(package_map.values()), outfile)
