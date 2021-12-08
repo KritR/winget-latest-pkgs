@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "winget-fetcher"
+version = "0.1.0"
+description = "Fetches the latest winget packages and turns them into a json list"
+authors = ["Krithik Rao <krdevmail@gmail.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+PyYAML = "^6.0"
+packaging = "^21.3"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
