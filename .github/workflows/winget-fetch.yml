@@ -14,25 +14,13 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: 3.9
-      - name: Run image
-        uses: abatilo/actions-poetry@v2.0.0
+      - uses: Gr1N/setup-poetry@v7
+      - uses: actions/cache@v2
         with:
-          poetry-version: 1.1.12
-      - name: Cache Poetry virtualenv
-        uses: actions/cache@v1
-        id: cache
-        with:
-          path: ~/.virtualenvs
-          key: poetry-$
-          restore-keys: |
-            poetry-$
-      - name: Set Poetry config
-        run: |
-          poetry config settings.virtualenvs.in-project false
-          poetry config settings.virtualenvs.path ~/.virtualenvs
+          path: ~/.cache/pypoetry/virtualenvs
+          key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
       - name: Install Dependencies
         run: poetry install
-        if: steps.cache.outputs.cache-hit != 'true'
       - uses: actions/checkout@v2
         with:
           repository: 'microsoft/winget-pkgs'
